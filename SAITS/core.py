@@ -4,10 +4,6 @@ and takes over the forward progress of the algorithm.
 
 """
 
-# Created by Wenjie Du <wenjay.du@gmail.com>
-# License: BSD-3-Clause
-
-
 import torch
 import torch.nn as nn
 

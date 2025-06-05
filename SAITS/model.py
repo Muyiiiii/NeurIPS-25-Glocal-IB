@@ -3,9 +3,6 @@ The implementation of SAITS for the partially-observed time-series imputation ta
 
 """
 
-# Created by Wenjie Du <wenjay.du@gmail.com>
-# License: BSD-3-Clause
-
 from typing import Union, Optional
 
 import numpy as np
