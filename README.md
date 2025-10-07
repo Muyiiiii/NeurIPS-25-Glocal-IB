@@ -10,7 +10,7 @@
 
 [NeurIPS Version](https://neurips.cc/virtual/2025/poster/116239)  
 
-**Arxiv is coming soon**
+[Arxiv Version](https://arxiv.org/pdf/2510.04910)
 
 
 
@@ -69,8 +69,8 @@ Glocal-IB is a novel framework for time series imputation that combines global a
 
 ### Prerequisites
 
-- Python 3.8+
-- PyTorch 1.9+
+- Python 3.10+
+- PyTorch 2.0+
 - CUDA (optional, for GPU acceleration)
 
 ### Install Dependencies
