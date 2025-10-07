@@ -1,19 +1,20 @@
 """
-Dataset class for the imputation model SAITS.
+Dataset class for the imputation model GP-VAE.
 """
+
+# Created by Jun Wang <jwangfx@connect.ust.hk> and Wenjie Du <wenjay.du@gmail.com>
+# License: BSD-3-Clause
 
 from typing import Union, Iterable
 
 import torch
-from pygrinder import mcar, fill_and_get_mask_torch
+from pygrinder import fill_and_get_mask_torch
 
 from pypots.data.dataset import BaseDataset
 
 
-class DatasetForSAITS(BaseDataset):
-    """Dataset for models that need MIT (masked imputation task) in their training, such as SAITS.
-
-    For more information about MIT, please refer to :cite:`du2023SAITS`.
+class DatasetForGPVAE(BaseDataset):
+    """Dataset class for GP-VAE.
 
     Parameters
     ----------
@@ -37,14 +38,6 @@ class DatasetForSAITS(BaseDataset):
 
     file_type :
         The type of the given file if train_set and val_set are path strings.
-
-    rate : float, in (0,1),
-        Artificially missing rate, rate of the observed values which will be artificially masked as missing.
-        Note that, `rate` = (number of artificially missing values) / np.sum(~np.isnan(self.data)),
-        not (number of artificially missing values) / np.product(self.data.shape),
-        considering that the given data may already contain missing values,
-        the latter way may be confusing because if the original missing rate >= `rate`,
-        the function will do nothing, i.e. it won't play the role it has to be.
     """
 
     def __init__(
@@ -53,7 +46,6 @@ class DatasetForSAITS(BaseDataset):
         return_X_ori: bool,
         return_y: bool,
         file_type: str = "hdf5",
-        rate: float = 0.2,
     ):
         super().__init__(
             data=data,
@@ -62,56 +54,46 @@ class DatasetForSAITS(BaseDataset):
             return_y=return_y,
             file_type=file_type,
         )
-        self.rate = rate
 
     def _fetch_data_from_array(self, idx: int) -> Iterable:
-        """Fetch data according to index.
+        """Fetch data from self.X if it is given.
 
         Parameters
         ----------
         idx :
-            The index to fetch the specified sample.
+            The index of the sample to be return.
 
         Returns
         -------
         sample :
             A list contains
 
-            index :
+            index : int tensor,
                 The index of the sample.
 
-            X_ori :
-                Original time-series for calculating mask imputation loss.
+            X : tensor,
+                The feature vector for model input.
 
-            X :
-                Time-series data with artificially missing values for model input.
+            missing_mask : tensor,
+                The mask indicates all missing values in X.
 
-            missing_mask :
-                The mask records all missing values in X.
+            delta : tensor,
+                The delta matrix contains time gaps of missing values.
 
-            indicating_mask :
-                The mask indicates artificially missing values in X.
+            label (optional) : tensor,
+                The target label of the time-series sample.
         """
+        X = self.X[idx]
 
         if self.return_X_ori:
             X = self.X[idx]
-            X_ori = self.X_ori[idx]
             missing_mask = self.missing_mask[idx]
+            X_ori = self.X_ori[idx]
             indicating_mask = self.indicating_mask[idx]
+            sample = [torch.tensor(idx), X, missing_mask, X_ori, indicating_mask]
         else:
-            X_ori = self.X[idx]
-            X = mcar(X_ori, p=self.rate)
             X, missing_mask = fill_and_get_mask_torch(X)
-            X_ori, X_ori_missing_mask = fill_and_get_mask_torch(X_ori)
-            indicating_mask = (X_ori_missing_mask - missing_mask).to(torch.float32)
-
-        sample = [
-            torch.tensor(idx),
-            X,
-            missing_mask,
-            X_ori,
-            indicating_mask,
-        ]
+            sample = [torch.tensor(idx), X, missing_mask]
 
         if self.return_y:
             sample.append(self.y[idx].to(torch.long))
@@ -142,14 +124,11 @@ class DatasetForSAITS(BaseDataset):
             X_ori, X_ori_missing_mask = fill_and_get_mask_torch(X_ori)
             X, missing_mask = fill_and_get_mask_torch(X)
             indicating_mask = (X_ori_missing_mask - missing_mask).to(torch.float32)
+            sample = [torch.tensor(idx), X, missing_mask, X_ori, indicating_mask]
         else:
-            X_ori = torch.from_numpy(self.file_handle["X"][idx]).to(torch.float32)
-            X = mcar(X_ori, p=self.rate)
-            X_ori, X_ori_missing_mask = fill_and_get_mask_torch(X_ori)
+            X = torch.from_numpy(self.file_handle["X"][idx]).to(torch.float32)
             X, missing_mask = fill_and_get_mask_torch(X)
-            indicating_mask = (X_ori_missing_mask - missing_mask).to(torch.float32)
-
-        sample = [torch.tensor(idx), X, missing_mask, X_ori, indicating_mask]
+            sample = [torch.tensor(idx), X, missing_mask]
 
         # if the dataset has labels and is for training, then fetch it from the file
         if self.return_y:

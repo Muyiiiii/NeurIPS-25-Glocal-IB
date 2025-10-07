@@ -1,7 +1,10 @@
 """
-The implementation of SAITS for the partially-observed time-series imputation task.
+The implementation of DLinear for the partially-observed time-series imputation task.
 
 """
+
+# Created by Wenjie Du <wenjay.du@gmail.com>
+# License: BSD-3-Clause
 
 from typing import Union, Optional
 
@@ -9,19 +12,19 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from .core import _SAITS
-from .data import DatasetForSAITS
+from .core import _DLinear
+from .data import DatasetForDLinear
 from pypots.imputation.base import BaseNNImputer
 from pypots.data.checking import key_in_data_set
 from pypots.data.dataset import BaseDataset
 from pypots.nn.modules.loss import Criterion, MAE, MSE
 from pypots.optim.adam import Adam
 from pypots.optim.base import Optimizer
-from pypots.utils.logging import logger
 
 
-class SAITS_MY(BaseNNImputer):
-    """The PyTorch implementation of the SAITS model :cite:`du2023SAITS`.
+class DLinear_MY(BaseNNImputer):
+    """The PyTorch implementation of the DLinear model.
+    DLinear is originally proposed by Zeng et al. in :cite:`zeng2023dlinear`.
 
     Parameters
     ----------
@@ -31,44 +34,21 @@ class SAITS_MY(BaseNNImputer):
     n_features :
         The number of features in the time-series data sample.
 
-    n_layers :
-        The number of layers in the 1st and 2nd DMSA blocks in the SAITS model.
+    moving_avg_window_size :
+        The window size of moving average.
 
-    d_model :
-        The dimension of the model's backbone.
-        It is the input dimension of the multi-head DMSA layers.
+    individual :
+        Whether to make a linear layer for each variate/channel/feature individually.
 
-    n_heads :
-        The number of heads in the multi-head DMSA mechanism.
-        ``d_model`` must be divisible by ``n_heads``, and the result should be equal to ``d_k``.
-
-    d_k :
-        The dimension of the `keys` (K) and the `queries` (Q) in the DMSA mechanism.
-        ``d_k`` should be the result of ``d_model`` divided by ``n_heads``. Although ``d_k`` can be directly calculated
-        with given ``d_model`` and ``n_heads``, we want it be explicitly given together with ``d_v`` by users to ensure
-        users be aware of them and to avoid any potential mistakes.
-
-    d_v :
-        The dimension of the `values` (V) in the DMSA mechanism.
-
-    d_ffn :
-        The dimension of the layer in the Feed-Forward Networks (FFN).
-
-    dropout :
-        The dropout rate for all fully-connected layers in the model.
-
-    attn_dropout :
-        The dropout rate for DMSA.
-
-    diagonal_attention_mask :
-        Whether to apply a diagonal attention mask to the self-attention mechanism.
-        If so, the attention layers will use DMSA. Otherwise, the attention layers will use the original.
+    d_model:
+        The dimension of the space in which the time-series data will be embedded and modeled.
+        It is necessary only for DLinear in the non-individual mode.
 
     ORT_weight :
-        The weight for the ORT loss.
+        The weight for the ORT loss, the same as SAITS.
 
     MIT_weight :
-        The weight for the MIT loss.
+        The weight for the MIT loss, the same as SAITS.
 
     batch_size :
         The batch size for training and evaluating the model.
@@ -128,17 +108,11 @@ class SAITS_MY(BaseNNImputer):
         align_type: str,
         n_steps: int,
         n_features: int,
-        n_layers: int,
-        d_model: int,
-        n_heads: int,
-        d_k: int,
-        d_v: int,
-        d_ffn: int,
-        dropout: float = 0,
-        attn_dropout: float = 0,
-        diagonal_attention_mask: bool = True,
-        ORT_weight: int = 1,
-        MIT_weight: int = 1,
+        moving_avg_window_size: int,
+        individual: bool = False,
+        d_model: Optional[int] = None,
+        ORT_weight: float = 1,
+        MIT_weight: float = 1,
         batch_size: int = 32,
         epochs: int = 100,
         patience: Optional[int] = None,
@@ -147,7 +121,7 @@ class SAITS_MY(BaseNNImputer):
         optimizer: Union[Optimizer, type] = Adam,
         num_workers: int = 0,
         device: Optional[Union[str, torch.device, list]] = None,
-        saving_path: Optional[str] = None,
+        saving_path: str = None,
         model_saving_strategy: Optional[str] = "best",
         verbose: bool = True,
     ):
@@ -163,58 +137,36 @@ class SAITS_MY(BaseNNImputer):
             model_saving_strategy=model_saving_strategy,
             verbose=verbose,
         )
-
-        if d_model != n_heads * d_k:
-            logger.warning(
-                "‼️ d_model must = n_heads * d_k, it should be divisible by n_heads "
-                f"and the result should be equal to d_k, but got d_model={d_model}, n_heads={n_heads}, d_k={d_k}"
-            )
-            d_model = n_heads * d_k
-            logger.warning(
-                f"⚠️ d_model is reset to {d_model} = n_heads ({n_heads}) * d_k ({d_k})"
-            )
+        self.loss_type = loss_type
+        self.loss_weight = loss_weight
+        self.align_type = align_type
 
         self.n_steps = n_steps
         self.n_features = n_features
         # model hype-parameters
-        self.loss_type = loss_type
-        self.loss_weight = loss_weight
-        self.align_type = align_type
-        self.n_layers = n_layers
+        self.moving_avg_window_size = moving_avg_window_size
+        self.individual = individual
         self.d_model = d_model
-        self.d_ffn = d_ffn
-        self.n_heads = n_heads
-        self.d_k = d_k
-        self.d_v = d_v
-        self.dropout = dropout
-        self.attn_dropout = attn_dropout
-        self.diagonal_attention_mask = diagonal_attention_mask
         self.ORT_weight = ORT_weight
         self.MIT_weight = MIT_weight
 
         # set up the model
-        self.model = _SAITS(
+        self.model = _DLinear(
             loss_type=self.loss_type,
             loss_weight=self.loss_weight,
             align_type=self.align_type,
-            n_layers=self.n_layers,
             n_steps=self.n_steps,
             n_features=self.n_features,
+            moving_avg_window_size=self.moving_avg_window_size,
+            individual=self.individual,
             d_model=self.d_model,
-            n_heads=self.n_heads,
-            d_k=self.d_k,
-            d_v=self.d_v,
-            d_ffn=self.d_ffn,
-            dropout=self.dropout,
-            attn_dropout=self.attn_dropout,
-            diagonal_attention_mask=self.diagonal_attention_mask,
             ORT_weight=self.ORT_weight,
             MIT_weight=self.MIT_weight,
             training_loss=self.training_loss,
             validation_metric=self.validation_metric,
         )
-        self._print_model_size()
         self._send_model_to_given_device()
+        self._print_model_size()
 
         # set up the optimizer
         if isinstance(optimizer, Optimizer):
@@ -252,6 +204,7 @@ class SAITS_MY(BaseNNImputer):
             "X": X,
             "missing_mask": missing_mask,
         }
+
         return inputs
 
     def fit(
@@ -261,9 +214,7 @@ class SAITS_MY(BaseNNImputer):
         file_type: str = "hdf5",
     ) -> None:
         # Step 1: wrap the input data with classes Dataset and DataLoader
-        training_set = DatasetForSAITS(
-            train_set, return_X_ori=False, return_y=False, file_type=file_type
-        )
+        training_set = DatasetForDLinear(train_set, return_X_ori=False, return_y=False, file_type=file_type)
         training_loader = DataLoader(
             training_set,
             batch_size=self.batch_size,
@@ -274,9 +225,7 @@ class SAITS_MY(BaseNNImputer):
         if val_set is not None:
             if not key_in_data_set("X_ori", val_set):
                 raise ValueError("val_set must contain 'X_ori' for model validation.")
-            val_set = DatasetForSAITS(
-                val_set, return_X_ori=True, return_y=False, file_type=file_type
-            )
+            val_set = DatasetForDLinear(val_set, return_X_ori=True, return_y=False, file_type=file_type)
             val_loader = DataLoader(
                 val_set,
                 batch_size=self.batch_size,
@@ -289,47 +238,15 @@ class SAITS_MY(BaseNNImputer):
         self.model.load_state_dict(self.best_model_dict)
 
         # Step 3: save the model if necessary
-        self._auto_save_model_if_necessary(
-            confirm_saving=self.model_saving_strategy == "best"
-        )
+        self._auto_save_model_if_necessary(confirm_saving=self.model_saving_strategy == "best")
 
     @torch.no_grad()
     def predict(
         self,
         test_set: Union[dict, str],
         file_type: str = "hdf5",
-        diagonal_attention_mask: bool = True,
-        return_latent_vars: bool = False,
     ) -> dict:
-        """Make predictions for the input data with the trained model.
 
-        Parameters
-        ----------
-        test_set :
-            The dataset for model validating, should be a dictionary including keys as 'X',
-            or a path string locating a data file supported by PyPOTS (e.g. h5 file).
-            If it is a dict, X should be array-like with shape [n_samples, n_steps, n_features],
-            which is time-series data for validating, can contain missing values, and y should be array-like of shape
-            [n_samples], which is classification labels of X.
-            If it is a path string, the path should point to a data file, e.g. a h5 file, which contains
-            key-value pairs like a dict, and it has to include keys as 'X' and 'y'.
-
-        file_type :
-            The type of the given file if test_set is a path string.
-
-        diagonal_attention_mask :
-            Whether to apply a diagonal attention mask to the self-attention mechanism in the testing stage.
-
-        return_latent_vars :
-            Whether to return the latent variables in SAITS, e.g. attention weights of two DMSA blocks and
-            the weight matrix from the combination block, etc.
-
-        Returns
-        -------
-        file_type :
-            The dictionary containing the clustering results and latent variables if necessary.
-
-        """
         self.model.eval()  # set the model to evaluation mode
         # Step 1: wrap the input data with classes Dataset and DataLoader
         test_set = BaseDataset(
@@ -347,27 +264,13 @@ class SAITS_MY(BaseNNImputer):
         )
         imputation_collector = []
         enc_out_collector = []
-        first_DMSA_attn_weights_collector = []
-        second_DMSA_attn_weights_collector = []
-        combining_weights_collector = []
 
         # Step 2: process the data with the model
         for idx, data in enumerate(test_loader):
             inputs = self._assemble_input_for_testing(data)
-            results = self.model.forward(inputs, diagonal_attention_mask)
+            results = self.model.forward(inputs)
             imputation_collector.append(results["imputed_data"])
             enc_out_collector.append(results["X_obs_p_contras"])
-
-            if return_latent_vars:
-                first_DMSA_attn_weights_collector.append(
-                    results["first_DMSA_attn_weights"].cpu().numpy()
-                )
-                second_DMSA_attn_weights_collector.append(
-                    results["second_DMSA_attn_weights"].cpu().numpy()
-                )
-                combining_weights_collector.append(
-                    results["combining_weights"].cpu().numpy()
-                )
 
         # Step 3: output collection and return
         imputation = torch.cat(imputation_collector).cpu().detach().numpy()
@@ -375,20 +278,8 @@ class SAITS_MY(BaseNNImputer):
             "imputation": imputation,
         }
 
-        if return_latent_vars:
-            latent_var_collector = {
-                "first_DMSA_attn_weights": np.concatenate(
-                    first_DMSA_attn_weights_collector
-                ),
-                "second_DMSA_attn_weights": np.concatenate(
-                    second_DMSA_attn_weights_collector
-                ),
-                "combining_weights": np.concatenate(combining_weights_collector),
-            }
-            result_dict["latent_vars"] = latent_var_collector
-
         result_dict["enc_out"] = torch.cat(enc_out_collector).cpu().detach().numpy()
-
+        
         return result_dict
 
     def impute(
@@ -396,6 +287,7 @@ class SAITS_MY(BaseNNImputer):
         test_set: Union[dict, str],
         file_type: str = "hdf5",
     ) -> np.ndarray:
+
         result_dict = self.predict(test_set, file_type=file_type)
         return result_dict["imputation"]
 

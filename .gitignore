@@ -1,0 +1,432 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+#  Usually these files are written by a python script from a template
+#  before PyInstaller builds the exe, so as to inject date/other infos into it.
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
+#   However, in case of collaboration, if having platform-specific dependencies or dependencies
+#   having no cross-platform support, pipenv may install dependencies that don't work, or not
+#   install all needed dependencies.
+#Pipfile.lock
+
+# PEP 582; used by e.g. github.com/David-OConnor/pyflow
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# Project specific files
+# Data files and embeddings
+data/
+emb/
+*.csv
+*.tsv
+*.json
+*.pkl
+*.pickle
+*.h5
+*.hdf5
+
+# Model checkpoints and weights
+checkpoints/
+models/
+*.pth
+*.pt
+*.ckpt
+*.bin
+*.safetensors
+
+# Logs and results
+log/
+logs/
+results/
+outputs/
+wandb/
+tensorboard_logs/
+*.log
+
+# Temporary files
+tmp/
+temp/
+.tmp/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Large files that shouldn't be in version control
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# Configuration files with sensitive information
+config.ini
+secrets.json
+.env.local
+.env.production
+
+# Backup files
+*.bak
+*.backup
+*_backup.*
+
+# Cache directories
+.cache/
+cache/
+
+# Compiled Python files in specific directories
+*/__pycache__/
+*/*.pyc
+*/*.pyo
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Project specific ignore patterns
+# Training outputs
+training_outputs/
+experiment_results/
+
+# Dataset downloads
+datasets/
+raw_data/
+
+# Model artifacts
+artifacts/
+mlruns/
+
+# Documentation builds
+docs/build/
+docs/source/_build/
+
+# Test outputs
+test_outputs/
+test_results/
+
+# Performance profiling
+*.prof
+*.lprof
+
+# Memory dumps
+*.dmp
+core.*
+
+# Local configuration overrides
+local_config.py
+config_local.py
+
+# Package installation directories
+site-packages/
+
+# Virtual environment directories
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# Conda environments
+.conda/
+
+# Poetry
+poetry.lock
+
+# Pipenv
+Pipfile.lock
+
+# Requirements files with hashes (generated)
+requirements*.txt
+constraints*.txt
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+
+# pytest
+.pytest_cache/
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Large binary files
+*.bin
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Compressed files
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Media files (usually large)
+*.mp4
+*.avi
+*.mov
+*.wmv
+*.flv
+*.webm
+*.mp3
+*.wav
+*.flac
+*.aac
+*.ogg
+*.wma
+*.jpg
+*.jpeg
+*.png
+*.gif
+*.bmp
+*.tiff
+*.tif
+*.svg
+*.ico
+*.webp
+
+# 3D model files
+*.obj
+*.fbx
+*.dae
+*.3ds
+*.blend
+*.max
+*.c4d
+*.ma
+*.mb
+
+# CAD files
+*.dwg
+*.dxf
+*.step
+*.stp
+*.iges
+*.igs
+
+# Archive files
+*.tar
+*.gz
+*.bz2
+*.xz
+*.7z
+*.zip
+*.rar
+*.cab
+*.deb
+*.rpm
+*.msi
+
+# Backup and temporary files
+*~
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.rej
+*.swp
+*.swo
+.#*
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE and editor specific
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.atom/
+.brackets.json
+*.code-workspace
+
+# Project specific
+# Add any project-specific files or directories here
+# For example:
+# custom_configs/
+# local_experiments/
+# debug_outputs/
