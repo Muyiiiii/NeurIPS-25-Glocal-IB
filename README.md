@@ -4,11 +4,11 @@
 
 
 
-##  🎉 Accepted in NeurIPS 2025 [NeurIPS Version]([NeurIPS Poster Glocal Information Bottleneck for Time Series Imputation](https://neurips.cc/virtual/2025/poster/116239))
+##  🎉 Accepted in NeurIPS 2025 
 
 
 
-### Arxiv is coming soon
+[NeurIPS Version]([NeurIPS Poster Glocal Information Bottleneck for Time Series Imputation](https://neurips.cc/virtual/2025/poster/116239))   **Arxiv is coming soon**
 
 
 
