@@ -1,14 +1,14 @@
-# Glocal-IB: Global-Local Information Bottleneck for Time Series Imputation
+# Glocal-IB: Glocal Information Bottleneck for Time Series Imputation
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.0+-red.svg)](https://pytorch.org/) [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 
 
-##  🥰 Accepted in NeurIPS 2025 [NeurIPS]([NeurIPS Poster Glocal Information Bottleneck for Time Series Imputation](https://neurips.cc/virtual/2025/poster/116239))
+##  🎉 Accepted in NeurIPS 2025 [NeurIPS Version]([NeurIPS Poster Glocal Information Bottleneck for Time Series Imputation](https://neurips.cc/virtual/2025/poster/116239))
 
 
 
-### **Arxiv is coming soon**
+### Arxiv is coming soon
 
 
 
