@@ -1,8 +1,16 @@
 # Glocal-IB: Global-Local Information Bottleneck for Time Series Imputation
 
-[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.0.0+-red.svg)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/downloads/) [![PyTorch](https://img.shields.io/badge/PyTorch-2.0.0+-red.svg)](https://pytorch.org/) [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+
+
+
+##  🥰 Accepted in NeurIPS 2025 [NeurIPS]([NeurIPS Poster Glocal Information Bottleneck for Time Series Imputation](https://neurips.cc/virtual/2025/poster/116239))
+
+
+
+### **Arxiv is coming soon**
+
+
 
 ## 📋 Table of Contents
 
@@ -25,7 +33,15 @@
 
 ## 🎯 Overview
 
-Glocal-IB is a novel framework for time series imputation that combines global and local information through an Information Bottleneck approach. The framework wraps existing imputation models and enhances them with alignment loss to improve imputation quality by learning better representations of both masked and complete time series data.
+Glocal-IB is a novel framework for time series imputation that combines global and local information through an Information Bottleneck approach. The framework wraps existing imputation models and enhances them with alignment loss to improve imputation quality by learning better representations of both masked and complete time series data. Moreover, it solves the optimization dilemma in current time series imputation methods.
+
+![model](./pic/model.png)
+
+
+
+![introduction](./pic/introduction_pic.png)
+
+
 
 ### Key Innovation
 
