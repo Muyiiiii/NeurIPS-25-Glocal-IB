@@ -8,7 +8,9 @@
 
 
 
-[NeurIPS Version](https://neurips.cc/virtual/2025/poster/116239)  **Arxiv is coming soon**
+[NeurIPS Version](https://neurips.cc/virtual/2025/poster/116239)  
+
+**Arxiv is coming soon**
 
 
 
@@ -193,6 +195,8 @@ bash script/train_bash.sh
 ## 📊 Datasets
 
 ### All datasets is in [Google Drive](https://drive.google.com/file/d/1ZUKOriW3avAJFEGw2gDReYqF1vAKyu2l/view?usp=sharing).
+
+Put all of them in the `data/all_datasets`.
 
 The framework supports various time series datasets:
 
