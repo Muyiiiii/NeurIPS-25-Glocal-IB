@@ -338,7 +338,12 @@ pip install -e .
 If you use this code in your research, please cite our paper:
 
 ```bibtex
-
+@article{yang2025glocal,
+  title={Glocal Information Bottleneck for Time Series Imputation},
+  author={Yang, Jie and Zhang, Kexin and Zhang, Guibin and Yu, Philip S and Ding, Kaize},
+  journal={arXiv preprint arXiv:2510.04910},
+  year={2025}
+}
 ```
 
 
