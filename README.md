@@ -12,8 +12,6 @@
 
 [Arxiv Version](https://arxiv.org/pdf/2510.04910)
 
-[Video Link](https://recorder-v3.slideslive.com/?share=104134&s=7fd77b27-0122-4581-a3ba-3e58c54f45d9)
-
 
 
 ## 📋 Table of Contents
